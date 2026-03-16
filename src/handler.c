@@ -35,5 +35,35 @@ enum MHD_Result default_handler(
 				.status = OK
 			};
 		}
+		else if(validate_route(url_str, "/user")) {
+			response_api = user_router(url_str, method_str, upload_data);
+		}
+		else if(validate_route(url_str, "/book")) {
+			response_api = book_router(url_str, method_str, upload_data);
+		}
+		else {
+			response_api = (HTTP_response) {
+				.body = simple_message("Exception found")
+				.status = NOT_FOUND
+			};
+		}
+	} CATCH {
+		response_api = (HTTP_response) {
+			.body("Internal Server Error")
+			.status = INTERNAL_SERVER_ERROR
+		};
+
+		printf("Server error");
 	}
+
+	//Turns response to JSON format
+	response = MHD_build_response_JSON(response_api.body);
+	if(!response) {
+		return MHD_NO;
+	}
+
+	ret = MHD_queue_response(connection, response_api.status, response);
+	MHD_destroy_response(response);
+
+	return ret;
 }
