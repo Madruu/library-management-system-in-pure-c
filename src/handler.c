@@ -1,8 +1,8 @@
 #include "headers/response_builder.h"
-#include "handlers/user_handler.h"
+#include "headers/user_controller.h"
 #include <setjmp.h>
 #include "headers/handler.h"
-
+#include <string.h>
 jmp_buf exceptionBuffer;
 
 #define TRY if(set_jmp(exceptionBuffer) == 0)
@@ -57,7 +57,7 @@ enum MHD_Result default_handler(
 	}
 
 	//Turns response to JSON format
-	response = MHD_build_response_JSON(response_api.body);
+	response = HTTP_build_response_JSON(response_api.body);
 	if(!response) {
 		return MHD_NO;
 	}
